@@ -1,9 +1,11 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
+import sharp from "sharp";
 import { z } from "zod";
-const f = createUploadthing();
+import { db } from "@/db";
+import { configurations } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
-const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
+const f = createUploadthing();
 
 export const ourFileRouter = {
   imageUploader: f({ image: { maxFileSize: "4MB" } })
@@ -17,7 +19,36 @@ export const ourFileRouter = {
     })
     .onUploadComplete(async ({ metadata, file }) => {
       const { configId } = metadata.input;
-      return { configId };
+
+      const res = await fetch(file.url);
+      const buffer = await res.arrayBuffer();
+      const imageMetadata = await sharp(buffer).metadata();
+      const { width, height } = imageMetadata;
+
+      if (!configId) {
+        const configuration = await db
+          .insert(configurations)
+          .values({
+            width: width || 500,
+            height: height || 500,
+            imageUrl: file.url,
+          })
+          .returning({ insertedId: configurations.id });
+
+        console.log(configuration);
+
+        return {
+          configId: configuration[0].insertedId,
+        };
+      } else {
+        const updatedConfigurations = await db
+          .update(configurations)
+          .set({ croppedImageUrl: file.url })
+          .where(eq(configurations.id, configId))
+          .returning({ updatedId: configurations.id });
+
+        return { configId: updatedConfigurations[0].updatedId };
+      }
     }),
 } satisfies FileRouter;
 
