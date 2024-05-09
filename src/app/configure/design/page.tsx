@@ -28,7 +28,7 @@ export default async function Page({ searchParams }: PageProps) {
     <CaseDesigner
       configId={id}
       imageUrl={imageUrl!}
-      imageDimentions={{ height: height!, width: width! }}
+      imageDimensions={{ height: height!, width: width! }}
     />
   );
 }
