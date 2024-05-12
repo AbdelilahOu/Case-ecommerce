@@ -35,8 +35,6 @@ export const ourFileRouter = {
           })
           .returning({ insertedId: configurations.id });
 
-        console.log(configuration);
-
         return {
           configId: configuration[0].insertedId,
         };
@@ -46,6 +44,8 @@ export const ourFileRouter = {
           .set({ croppedImageUrl: file.url })
           .where(eq(configurations.id, configId))
           .returning({ updatedId: configurations.id });
+
+        console.log(updatedConfigurations);
 
         return { configId: updatedConfigurations[0].updatedId };
       }

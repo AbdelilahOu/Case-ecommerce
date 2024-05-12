@@ -26,6 +26,9 @@ import { ArrowRight, Check, ChevronsDown } from "lucide-react";
 import { BASE_PRICE } from "@/config/products";
 import { useUploadThing } from "@/lib/uploadThing";
 import { useToast } from "@/components/ui/use-toast";
+import { useMutation } from "@tanstack/react-query";
+import { OrderConfig, saveOrderConfig } from "./actions";
+import { useRouter } from "next/navigation";
 
 interface ImageConfig {
   configId: string;
@@ -37,6 +40,26 @@ interface ImageConfig {
 }
 
 const CaseDesigner = ({ configId, imageUrl, imageDimensions }: ImageConfig) => {
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const { mutate: saveConfig } = useMutation({
+    mutationKey: ["save-config"],
+    mutationFn: async (args: OrderConfig) => {
+      await Promise.all([saveConfiguration(), saveOrderConfig(args)]);
+    },
+    onError: () => {
+      toast({
+        title: "Something went wrong",
+        description: "There was an error while processing, try again",
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
+      router.push(`/configur/preview?id=${configId}`);
+    },
+  });
+
   const [options, setOptions] = useState<{
     color: (typeof COLORS)[number];
     model: (typeof MODELS.options)[number];
@@ -63,7 +86,6 @@ const CaseDesigner = ({ configId, imageUrl, imageDimensions }: ImageConfig) => {
   const phoneCaseRef = useRef<HTMLDivElement | null>(null);
 
   const { startUpload } = useUploadThing("imageUploader");
-  const { toast } = useToast();
 
   async function saveConfiguration() {
     try {
@@ -371,7 +393,15 @@ const CaseDesigner = ({ configId, imageUrl, imageDimensions }: ImageConfig) => {
                 )}
               </p>
               <Button
-                onClick={() => saveConfiguration()}
+                onClick={() =>
+                  saveConfig({
+                    configId,
+                    color: options.color.value,
+                    finish: options.finish.value,
+                    material: options.material.value,
+                    model: options.model.value,
+                  })
+                }
                 size="sm"
                 className="w-full"
               >
