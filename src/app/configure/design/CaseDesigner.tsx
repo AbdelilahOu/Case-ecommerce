@@ -30,7 +30,7 @@ import { useMutation } from "@tanstack/react-query";
 import { OrderConfig, saveOrderConfig } from "./actions";
 import { useRouter } from "next/navigation";
 
-interface ImageConfig {
+interface Props {
   configId: string;
   imageUrl: string;
   imageDimensions: {
@@ -39,7 +39,7 @@ interface ImageConfig {
   };
 }
 
-const CaseDesigner = ({ configId, imageUrl, imageDimensions }: ImageConfig) => {
+const CaseDesigner = ({ configId, imageUrl, imageDimensions }: Props) => {
   const { toast } = useToast();
   const router = useRouter();
 
@@ -56,7 +56,7 @@ const CaseDesigner = ({ configId, imageUrl, imageDimensions }: ImageConfig) => {
       });
     },
     onSuccess: () => {
-      router.push(`/configur/preview?id=${configId}`);
+      router.push(`/configure/preview?id=${configId}`);
     },
   });
 
@@ -128,7 +128,7 @@ const CaseDesigner = ({ configId, imageUrl, imageDimensions }: ImageConfig) => {
       const blob = base64ToBlob(base64data, "image/png");
       const file = new File([blob], "filename.png", { type: "image/png" });
 
-      startUpload([file], { configId });
+      await startUpload([file], { configId });
     } catch (error) {
       toast({
         title: "Something went wrong",

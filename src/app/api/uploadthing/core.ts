@@ -45,8 +45,6 @@ export const ourFileRouter = {
           .where(eq(configurations.id, configId))
           .returning({ updatedId: configurations.id });
 
-        console.log(updatedConfigurations);
-
         return { configId: updatedConfigurations[0].updatedId };
       }
     }),

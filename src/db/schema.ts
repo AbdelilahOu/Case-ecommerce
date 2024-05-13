@@ -8,7 +8,7 @@ import {
   real,
   boolean,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, type InferSelectModel } from "drizzle-orm";
 
 export const orderStatusEnum = pgEnum("status", [
   "fulfilled",
@@ -128,3 +128,5 @@ export const ordersRelations = relations(orders, ({ one }) => ({
     references: [shippingAddress.id],
   }),
 }));
+
+export type ConfigurationsT = InferSelectModel<typeof configurations>;
