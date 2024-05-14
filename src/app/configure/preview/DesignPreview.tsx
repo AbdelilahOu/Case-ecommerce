@@ -3,18 +3,25 @@
 import Phone from "@/components/Phone";
 import { Button } from "@/components/ui/button";
 import { PRODUCT_PRICES, BASE_PRICE } from "@/config/products";
-import { ConfigurationsT } from "@/db/schema";
+import { ConfigurationT } from "@/db/schema";
 import { cn, formatPrice } from "@/lib/utils";
 import { COLORS, MODELS } from "@/validator/option-validator";
+import { useMutation } from "@tanstack/react-query";
 import { Check, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import Confetti from "react-dom-confetti";
+import { createCheckoutSession } from "./actions";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Props {
-  configuration: ConfigurationsT;
+  configuration: ConfigurationT;
 }
 
 const DesignPreview = ({ configuration }: Props) => {
+  const router = useRouter();
+  const { toast } = useToast();
+
   const [showConfetti, setShowConfetti] = useState(false);
   useEffect(() => setShowConfetti(true), []);
 
@@ -26,6 +33,22 @@ const DesignPreview = ({ configuration }: Props) => {
   if (material === "polycarbonate")
     totalPrice += PRODUCT_PRICES.material.polycarbonate;
   if (finish === "textured") totalPrice += PRODUCT_PRICES.finish.textured;
+
+  const { mutate: createPaymentSession } = useMutation({
+    mutationKey: ["get-checkout-session"],
+    mutationFn: createCheckoutSession,
+    onSuccess: ({ url }) => {
+      if (url) router.push(url);
+      else throw new Error("coudnt get payment url");
+    },
+    onError: () => {
+      toast({
+        title: "Something went wrong",
+        description: "There was an error while processing, try again",
+        variant: "destructive",
+      });
+    },
+  });
 
   return (
     <>
@@ -115,7 +138,9 @@ const DesignPreview = ({ configuration }: Props) => {
 
             <div className="mt-8 flex justify-end pb-12">
               <Button
-                // onClick={() => handleCheckout()}
+                onClick={() =>
+                  createPaymentSession({ configId: configuration.id })
+                }
                 disabled
                 isLoading
                 loadingText="loading"
