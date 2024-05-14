@@ -80,8 +80,17 @@ const config = {
             opacity: "1",
           },
         },
+        flashing: {
+          "0%, 100%": {
+            opacity: "0.2",
+          },
+          "20%": {
+            opacity: "1",
+          },
+        },
       },
       animation: {
+        flashing: "flashing 1.4s linear inifinite",
         "fade-in": "fade-in 0.5s linear forwards",
         marquee: "marquee var(--marquee-duration) linear infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
