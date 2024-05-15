@@ -47,7 +47,7 @@ export const configurations = pgTable("configurations", {
 });
 
 export const users = pgTable("users", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: text("id").primaryKey().notNull(),
   email: text("email"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -100,7 +100,7 @@ export const BillingAddressRelations = relations(
 export const orders = pgTable("orders", {
   id: uuid("id").defaultRandom().primaryKey(),
   configurationId: uuid("configuration_id").references(() => configurations.id),
-  userId: uuid("user_id").references(() => users.id),
+  userId: text("user_id").references(() => users.id),
   amount: real("amount"),
   isPaid: boolean("is_paid").default(false),
   status: orderStatusEnum("status"),

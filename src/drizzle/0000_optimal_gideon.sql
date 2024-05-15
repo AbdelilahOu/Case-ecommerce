@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS "configurations" (
 CREATE TABLE IF NOT EXISTS "orders" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"configuration_id" uuid,
-	"user_id" uuid,
+	"user_id" text,
 	"amount" real,
 	"is_paid" boolean DEFAULT false,
 	"status" "status",
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS "shipping_address" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"id" text PRIMARY KEY NOT NULL,
 	"email" text,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
