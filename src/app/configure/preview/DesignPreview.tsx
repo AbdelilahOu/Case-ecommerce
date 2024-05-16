@@ -24,6 +24,7 @@ const DesignPreview = ({ configuration }: Props) => {
   const router = useRouter();
   const { toast } = useToast();
   const { id } = configuration;
+  console.log(configuration);
   const { user } = useKindeBrowserClient();
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -32,8 +33,11 @@ const DesignPreview = ({ configuration }: Props) => {
   useEffect(() => setShowConfetti(true), []);
 
   const { color, model, finish, material } = configuration;
-  const tw = COLORS.find((c) => c.value == color)?.tw ?? "zinc-900";
-  const { label: modelLabel } = MODELS.options.find((m) => m.value == model)!;
+  const tw =
+    COLORS.find((c) => c.value == color && c.value === color)?.tw ?? "zinc-900";
+  const modelLabel =
+    MODELS.options.find((m) => m.value == model || m.value === model)?.label ??
+    "iPhone X";
 
   let totalPrice = BASE_PRICE;
   if (material === "polycarbonate")
