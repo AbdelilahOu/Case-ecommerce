@@ -17,14 +17,14 @@ export default async function Preview({ searchParams }: PageProps) {
     return notFound();
   }
 
-  const configuration = await db
+  const [configuration] = await db
     .select()
     .from(configurations)
     .where(eq(configurations.id, id));
 
-  if (!configuration[0]) {
+  if (!configuration) {
     return notFound();
   }
 
-  return <DesignPreview configuration={configuration[0]} />;
+  return <DesignPreview configuration={configuration} />;
 }

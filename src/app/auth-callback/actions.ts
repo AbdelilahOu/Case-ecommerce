@@ -13,12 +13,12 @@ export const getAuthStatus = async () => {
     throw new Error("Invalid user data");
   }
 
-  const existingUser = await db
+  const [existingUser] = await db
     .select()
     .from(users)
     .where(eq(users.id, user.id));
 
-  if (!existingUser[0]) {
+  if (!existingUser) {
     await db.insert(users).values({
       email: user.email,
       id: user.id,

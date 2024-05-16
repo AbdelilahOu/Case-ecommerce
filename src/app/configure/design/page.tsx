@@ -15,14 +15,14 @@ export default async function Page({ searchParams }: PageProps) {
 
   if (!id || typeof id !== "string") return notFound();
 
-  const configuration = await db
+  const [configuration] = await db
     .select()
     .from(configurations)
     .where(eq(configurations.id, id));
 
   if (!configuration) return notFound();
 
-  const { width, height, imageUrl } = configuration[0];
+  const { width, height, imageUrl } = configuration;
 
   return (
     <CaseDesigner

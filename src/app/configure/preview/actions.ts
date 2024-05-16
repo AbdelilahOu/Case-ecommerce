@@ -12,7 +12,7 @@ export const createCheckoutSession = async ({
 }: {
   configId: string;
 }) => {
-  const configuration = await db
+  const [configuration] = await db
     .select()
     .from(configurations)
     .where(eq(configurations.id, configId));
@@ -28,7 +28,7 @@ export const createCheckoutSession = async ({
     throw new Error("you need to be logged in");
   }
 
-  const { finish, material } = configuration[0];
+  const { finish, material, id, imageUrl } = configuration;
 
   let totalPrice = BASE_PRICE;
   if (material === "polycarbonate")
@@ -37,36 +37,31 @@ export const createCheckoutSession = async ({
 
   let order: OrderT | undefined;
 
-  const existingOrder = await db
+  const [existingOrder] = await db
     .select()
     .from(orders)
-    .where(
-      and(
-        eq(orders.userId, user.id),
-        eq(orders.configurationId, configuration[0].id)
-      )
-    );
+    .where(and(eq(orders.userId, user.id), eq(orders.configurationId, id)));
 
   console.log(user.id);
 
-  if (existingOrder[0]?.id) {
-    order = existingOrder[0];
+  if (existingOrder?.id) {
+    order = existingOrder;
   } else {
-    let newOrder = await db
+    let [newOrder] = await db
       .insert(orders)
       .values({
         amount: totalPrice / 100,
         userId: user.id,
-        configurationId: configuration[0].id,
+        configurationId: id,
         status: "awaiting_shipment",
       })
       .returning();
-    order = newOrder[0];
+    order = newOrder;
   }
 
   const product = await stripe.products.create({
     name: "Create iPhone case",
-    images: [configuration[0].imageUrl],
+    images: [imageUrl],
     default_price_data: {
       currency: "USD",
       unit_amount: totalPrice,
@@ -75,7 +70,7 @@ export const createCheckoutSession = async ({
 
   const stripeSession = await stripe.checkout.sessions.create({
     success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/thank-you?orderId=${order.id}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/configure/preview?id=${configuration[0].id}`,
+    cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/configure/preview?id=${id}`,
     payment_method_types: ["card"],
     mode: "payment",
     shipping_address_collection: {

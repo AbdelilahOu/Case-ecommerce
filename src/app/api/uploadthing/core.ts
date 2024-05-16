@@ -26,7 +26,7 @@ export const ourFileRouter = {
       const { width, height } = imageMetadata;
 
       if (!configId) {
-        const configuration = await db
+        const [configuration] = await db
           .insert(configurations)
           .values({
             width: width || 500,
@@ -36,16 +36,16 @@ export const ourFileRouter = {
           .returning({ insertedId: configurations.id });
 
         return {
-          configId: configuration[0].insertedId,
+          configId: configuration.insertedId,
         };
       } else {
-        const updatedConfigurations = await db
+        const [updatedConfigurations] = await db
           .update(configurations)
           .set({ croppedImageUrl: file.url })
           .where(eq(configurations.id, configId))
           .returning({ updatedId: configurations.id });
 
-        return { configId: updatedConfigurations[0].updatedId };
+        return { configId: updatedConfigurations.updatedId };
       }
     }),
 } satisfies FileRouter;
