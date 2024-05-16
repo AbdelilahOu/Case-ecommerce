@@ -32,7 +32,7 @@ const DesignPreview = ({ configuration }: Props) => {
   useEffect(() => setShowConfetti(true), []);
 
   const { color, model, finish, material } = configuration;
-  const tw = COLORS.find((c) => c.value == color)!.tw;
+  const tw = COLORS.find((c) => c.value == color)?.tw ?? "zinc-900";
   const { label: modelLabel } = MODELS.options.find((m) => m.value == model)!;
 
   let totalPrice = BASE_PRICE;
