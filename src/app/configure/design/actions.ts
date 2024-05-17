@@ -27,5 +27,6 @@ export async function saveOrderConfig(config: OrderConfig) {
       material: config.material,
       model: config.model,
     })
-    .where(eq(configurations.id, config.configId));
+    .where(eq(configurations.id, config.configId))
+    .returning();
 }

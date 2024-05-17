@@ -14,8 +14,8 @@ const ThankYou = () => {
   const { data } = useQuery({
     queryKey: ["get-payment-status"],
     queryFn: async () => await getPaymentStatus({ orderId }),
-    retry: true,
-    retryDelay: 500,
+    // retry: true,
+    // retryDelay: 500,
   });
 
   if (data === undefined) {

@@ -22,10 +22,13 @@ export const getPaymentStatus = async ({ orderId }: { orderId: string }) => {
   const [result] = await db
     .select()
     .from(orders)
-    .leftJoin(billingAddress, eq(orders.billingAddressId, billingAddress.id))
-    .leftJoin(shippingAddress, eq(orders.shippingAddressId, shippingAddress.id))
-    .leftJoin(configurations, eq(orders.configurationId, configurations.id))
-    .leftJoin(users, eq(orders.userId, users.id))
+    .innerJoin(billingAddress, eq(orders.billingAddressId, billingAddress.id))
+    .innerJoin(
+      shippingAddress,
+      eq(orders.shippingAddressId, shippingAddress.id)
+    )
+    .innerJoin(configurations, eq(orders.configurationId, configurations.id))
+    .innerJoin(users, eq(orders.userId, users.id))
     .where(and(eq(orders.id, orderId), eq(users.id, user.id)));
 
   if (!result.orders) throw new Error("This order does not exist.");
