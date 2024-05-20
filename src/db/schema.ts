@@ -131,3 +131,4 @@ export const ordersRelations = relations(orders, ({ one }) => ({
 
 export type ConfigurationT = InferSelectModel<typeof configurations>;
 export type OrderT = InferSelectModel<typeof orders>;
+export type ShippingT = InferSelectModel<typeof shippingAddress>;
