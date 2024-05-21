@@ -43,7 +43,7 @@ const CaseDesigner = ({ configId, imageUrl, imageDimensions }: Props) => {
   const { toast } = useToast();
   const router = useRouter();
 
-  const { mutate: saveConfig } = useMutation({
+  const { mutate: saveConfig, isPending } = useMutation({
     mutationKey: ["save-config"],
     mutationFn: async (args: OrderConfig) => {
       await Promise.all([saveConfiguration(), saveOrderConfig(args)]);
@@ -403,6 +403,9 @@ const CaseDesigner = ({ configId, imageUrl, imageDimensions }: Props) => {
                     model: options.model.value,
                   })
                 }
+                disabled={isPending}
+                isLoading={isPending}
+                loadingText="loading"
                 size="sm"
                 className="w-full"
               >

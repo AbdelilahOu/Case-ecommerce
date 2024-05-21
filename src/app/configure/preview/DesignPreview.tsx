@@ -29,7 +29,6 @@ const DesignPreview = ({ configuration }: Props) => {
 
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [loading, setLoading] = useState(false);
   useEffect(() => setShowConfetti(true), []);
 
   const { color, model, finish, material } = configuration;
@@ -44,10 +43,9 @@ const DesignPreview = ({ configuration }: Props) => {
     totalPrice += PRODUCT_PRICES.material.polycarbonate;
   if (finish === "textured") totalPrice += PRODUCT_PRICES.finish.textured;
 
-  const { mutate: createPaymentSession } = useMutation({
+  const { mutate: createPaymentSession, isPending } = useMutation({
     mutationKey: ["get-checkout-session"],
     mutationFn: async ({ configId }: { configId: string }) => {
-      setLoading(true);
       const { url } = await createCheckoutSession({ configId });
       return { url };
     },
@@ -62,7 +60,6 @@ const DesignPreview = ({ configuration }: Props) => {
         variant: "destructive",
       });
     },
-    onSettled: () => setLoading(false),
   });
 
   const handleCheckout = () => {
@@ -166,8 +163,8 @@ const DesignPreview = ({ configuration }: Props) => {
             <div className="mt-8 flex justify-end pb-12">
               <Button
                 onClick={() => handleCheckout()}
-                disabled={loading}
-                isLoading={loading}
+                disabled={isPending}
+                isLoading={isPending}
                 loadingText="loading"
                 className="px-4 sm:px-6 lg:px-8"
               >
